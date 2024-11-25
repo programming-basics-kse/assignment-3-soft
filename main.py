@@ -15,6 +15,8 @@ def main():
     args = parser.parse_args()
     if args.medals:
         task1(args.output, args.filename, args.country, args.year, args.noc)
+    elif args.total:
+        task2(args.year, args.filename)
 
 
 def task1(output, filename, country, year, noc):
@@ -52,10 +54,42 @@ def task1(output, filename, country, year, noc):
     if output_file is not None:
         output_file.close()
 
+#  python3 main.py --medals --filename "Olympic Athletes - athlete_events.tsv" --noc CHN --year 1992 --sport Basketball
+
+
+def task2(year, filename):
+    all_medals = {}
+    list_medals = ["Gold", "Silver", "Bronze"]
+    with open(filename, "r") as file:
+        for line in file:
+            data = line.strip().split("\t")
+            if data[9] == year and data[14] in list_medals:
+                if data[6] in all_medals:
+                    country_medals = all_medals[data[6]]
+                    if data[14] == "Gold":
+                        country_medals[0] += 1
+                    elif data[14] == "Silver":
+                        country_medals[1] += 1
+                    elif data[14] == "Bronze":
+                        country_medals[2] += 1
+                else:
+                    all_medals[data[6]] = [0, 0, 0]
+                    country_medals = all_medals[data[6]]
+                    if data[14] == "Gold":
+                        country_medals[0] = 1
+                    elif data[14] == "Silver":
+                        country_medals[1] = 1
+                    elif data[14] == "Bronze":
+                        country_medals[2] = 1
+    for key in all_medals:
+        count = all_medals[key]
+        print(f"{key}: {count[0]} - {count[1]} - {count[2]}")
+
+# python3 main.py --total --filename "Olympic Athletes - athlete_events.tsv" --year 1992
 
 if __name__ == '__main__':
     main()
 
-#  python3 main.py --medals --filename "Olympic Athletes - athlete_events.tsv" --noc CHN --year 1992 --sport Basketball
-
+# python3 main.py --medals --filename "Olympic Athletes - athlete_events.tsv" --noc CHN --year 1992 --sport Basketball
+# python3 main.py --total --filename "Olympic Athletes - athlete_events.tsv" --year 1992
 
