@@ -7,7 +7,7 @@ def main():
     parser.add_argument("--medals", action="store_true", required=False)
     parser.add_argument("--total", action="store_true", required=False)
     parser.add_argument("--overall", action="store_true", required=False)
-    parser.add_argument("--country", required=False, nargs='*')
+    parser.add_argument("--country",  nargs='*', required=False)
     parser.add_argument("--noc", required=False)
     parser.add_argument("--year", required=False)
     parser.add_argument("--sport", required=False)
@@ -17,6 +17,8 @@ def main():
         task1(args.output, args.filename, args.country, args.year, args.noc)
     elif args.total:
         task2(args.year, args.filename)
+    elif args.overall:
+        task3(args.filename, args.country)
 
 
 def task1(output, filename, country, year, noc):
@@ -87,9 +89,35 @@ def task2(year, filename):
 
 # python3 main.py --total --filename "Olympic Athletes - athlete_events.tsv" --year 1992
 
+
+
+def task3(filename, country):
+    medals = {}
+    best_year = []
+    for i in country:
+        medals[i] = dict()
+    with open(filename, "r") as file:
+        data = file.readline().split('\t')
+        while len(data) > 1:
+            if data[6] in medals:
+                if data[9] not in medals[data[6]]:
+                    medals[data[6]][data[9]] = 0
+                medals[data[6]][data[9]] += 1
+            data = file.readline().split('\t')
+    for countries in medals:
+        medals_by_year = medals[countries]
+        all_medals = medals_by_year.values()
+        max_data = max(all_medals)
+        for year in medals_by_year:
+            if medals_by_year[year] == max_data:
+                best_year.append(f"{country}-{year}-{max_data}\n")
+                print(f"{countries}-{year}-{max_data}\n")
+
+# python3 main.py --overall --filename "Olympic Athletes - athlete_events.tsv" --country Ukraine China Canada
+
 if __name__ == '__main__':
     main()
 
 # python3 main.py --medals --filename "Olympic Athletes - athlete_events.tsv" --noc CHN --year 1992 --sport Basketball
 # python3 main.py --total --filename "Olympic Athletes - athlete_events.tsv" --year 1992
-
+# python3 main.py --overall --filename "Olympic Athletes - athlete_events.tsv" --country China Ukraine Canada
